@@ -15,7 +15,6 @@ pub struct AuthGrant {
 #[derive(Debug)]
 pub enum GrantError {
     ExpirationCalculationFailed,
-    FormattingFailed(time::error::Format),
 }
 
 /// Generate an `AuthGrant` that expires in 15 minutes.
@@ -23,14 +22,15 @@ pub fn generate_auth_grant(
     client_id: String,
     redirect_uri: String,
 ) -> Result<AuthGrant, GrantError> {
+    let code = "auth_code".into();
     let expires_at = time::UtcDateTime::now()
         .checked_add(GRANT_EXPIRATION)
         .ok_or_else(|| GrantError::ExpirationCalculationFailed)?
-        .format(&time::format_description::well_known::Rfc3339)
-        .map_err(|e| GrantError::FormattingFailed(e))?;
+        .unix_timestamp()
+        .to_string();
 
     let grant = AuthGrant {
-        code: "auth_code".into(),
+        code,
         client_id,
         redirect_uri,
         expires_at,
