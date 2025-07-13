@@ -1,4 +1,4 @@
-use rocket::time::{self, Duration};
+use rocket::time::{Duration, UtcDateTime};
 use serde::Serialize;
 
 /// The time after which an auth grant expires, calculated from the time of grant generation
@@ -23,7 +23,7 @@ pub fn generate_auth_grant(
     redirect_uri: String,
 ) -> Result<AuthGrant, GrantError> {
     let code = "auth_code".into();
-    let expires_at = time::UtcDateTime::now()
+    let expires_at = UtcDateTime::now()
         .checked_add(AUTH_CODE_LIFETIME)
         .ok_or_else(|| GrantError::ExpirationCalculationFailed)?
         .unix_timestamp()
