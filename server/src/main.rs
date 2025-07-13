@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate rocket;
 mod oauth;
+mod error;
 
 #[get("/")]
 fn index() -> &'static str {
