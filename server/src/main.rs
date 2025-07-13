@@ -2,6 +2,7 @@
 extern crate rocket;
 mod oauth;
 mod error;
+mod db;
 
 #[get("/")]
 fn index() -> &'static str {
