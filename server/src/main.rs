@@ -1,9 +1,11 @@
+#[macro_use]
+extern crate rocket;
+use crate::oauth::{generate_auth_grant, AuthGrant};
 use rocket::serde::json::Json;
-use serde::Serialize;
 
-#[macro_use] extern crate rocket;
+mod oauth;
 
-/// need basic webserver with 
+/// need basic webserver with
 ///     GET /login/oauth/auth
 ///         - return auth grant
 ///     POST /login/oauth/access
@@ -15,15 +17,13 @@ fn index() -> &'static str {
     "Hello, world!"
 }
 
-#[derive(Serialize)]
-struct AuthResponse {
-    
-}
-
 #[get("/login/oauth/authorize")]
-fn auth() -> Json<AuthResponse> {
-    // check if the client ID exists in the db, reject if not
-    Json(AuthResponse { })
+fn auth() -> Json<AuthGrant> {
+    // TODO: check if the client ID exists in the db, reject if not
+    let client_id = "client_id".into();
+    let redirect_uri = "https://redirect.uri".into();
+    let grant = generate_auth_grant(client_id, redirect_uri).unwrap();
+    Json(grant)
 }
 
 #[launch]
