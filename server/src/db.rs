@@ -36,13 +36,17 @@ impl AuthGrantDb {
 
     /// Add an AuthGrant to the db
     pub fn insert(&mut self, grant: &AuthGrant) {
+        dbg!(&grant);
         self.active_grants.insert(grant.code.clone(), grant.clone());
     }
 
     /// Remove an AuthGrant from the db if it exists
     pub fn remove(&mut self, code: String) -> Result<AuthGrant, DatabaseInternalError> {
-        self.active_grants
+        let grant = self
+            .active_grants
             .remove(&code)
-            .ok_or_else(|| DatabaseInternalError::NoSuchValue)
+            .ok_or_else(|| DatabaseInternalError::NoSuchValue);
+        dbg!(&grant);
+        grant
     }
 }
