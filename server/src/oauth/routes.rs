@@ -1,8 +1,9 @@
 use crate::{
     error::UserError,
-    oauth::lib::{generate_auth_grant, AuthGrant},
+    oauth::lib::{exchange_auth_grant, generate_auth_grant, AccessToken, AuthGrant},
 };
 use rocket::{serde::json::Json, Route};
+use serde::{Deserialize, Serialize};
 
 /// Start the OAuth 2.0 flow by requesting an authorization grant token that can be exchanged for an access token.
 /// A client_id and redirect_uri are both required
@@ -29,6 +30,23 @@ fn auth(
     Ok(Json(grant))
 }
 
+#[derive(Serialize, Deserialize)]
+struct AuthGrantRequest {
+    code: String,
+}
+
+#[post("/token", data = "<data>")]
+fn token(data: Json<AuthGrantRequest>) -> Result<Json<AccessToken>, UserError> {
+    if let Ok(token) = exchange_auth_grant(data.code.clone()) {
+        Ok(Json(token))
+    } else {
+        Err(UserError {
+            error: "Failed to exchange auth grant".into(),
+            code: 400,
+        })
+    }
+}
+
 pub fn routes() -> Vec<Route> {
-    routes![auth]
+    routes![auth, token]
 }
