@@ -30,11 +30,19 @@ fn auth(
     Ok(Json(grant))
 }
 
+/// The expected format of the payload for a `POST /token` request
+/// 
+/// code: an auth grant code returned from the `/authorize` endpoint
 #[derive(Serialize, Deserialize)]
 struct AuthGrantRequest {
     code: String,
 }
 
+/// Exchange an auth grant code returned from the `/authorize` endpoint for an access token.
+/// 
+/// This endpoint will return a user error if the auth grant can't be exchanged. This may happen if:
+/// - the code is expired
+/// - no such grant can be found
 #[post("/token", data = "<data>")]
 fn token(data: Json<AuthGrantRequest>) -> Result<Json<AccessToken>, UserError> {
     if let Ok(token) = exchange_auth_grant(data.code.clone()) {
