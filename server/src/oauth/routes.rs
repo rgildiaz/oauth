@@ -31,7 +31,7 @@ fn auth(
 }
 
 /// The expected format of the payload for a `POST /token` request
-/// 
+///
 /// code: an auth grant code returned from the `/authorize` endpoint
 #[derive(Serialize, Deserialize)]
 struct AuthGrantRequest {
@@ -39,7 +39,7 @@ struct AuthGrantRequest {
 }
 
 /// Exchange an auth grant code returned from the `/authorize` endpoint for an access token.
-/// 
+///
 /// This endpoint will return a user error if the auth grant can't be exchanged. This may happen if:
 /// - the code is expired
 /// - no such grant can be found
