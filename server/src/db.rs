@@ -45,7 +45,7 @@ impl AuthGrantDb {
         let grant = self
             .active_grants
             .remove(&code)
-            .ok_or_else(|| DatabaseInternalError::NoSuchValue);
+            .ok_or(DatabaseInternalError::NoSuchValue);
         dbg!(&grant);
         grant
     }

@@ -27,7 +27,7 @@ pub fn generate_auth_grant(
     let code = "auth_code";
     let expires_at = UtcDateTime::now()
         .checked_add(AUTH_CODE_LIFETIME)
-        .ok_or_else(|| AuthError::ExpirationCalculationFailed)?
+        .ok_or(AuthError::ExpirationCalculationFailed)?
         .unix_timestamp()
         .to_string();
 
@@ -44,7 +44,7 @@ pub fn generate_auth_grant(
             db.insert(&grant);
         }
         Err(e) => {
-            eprintln!("Error while getting database: {}", e);
+            eprintln!("Error while getting database: {e}");
             return Err(AuthError::DatabaseError);
         }
     }
@@ -68,7 +68,7 @@ pub fn exchange_auth_grant(code: String) -> Result<AccessToken, AuthError> {
             })
         }
         Err(e) => {
-            eprintln!("Error while getting database: {}", e);
+            eprintln!("Error while getting database: {e}");
             Err(AuthError::DatabaseError)
         }
     }
