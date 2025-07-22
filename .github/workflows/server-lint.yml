@@ -17,16 +17,14 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
-        - name: cd server
-          run: cd server
-        - name: Run clippy
+        - name: cargo clippy
+          working-directory: ./server
           run: cargo clippy --all-targets --all-features -- -D warnings
 
     fmt:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
-        - name: cd server
-          run: cd server
-        - name: Check formatting
+        - name: cargo fmt
+          working-directory: ./server
           run: cargo fmt --all -- --check
