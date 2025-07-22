@@ -19,6 +19,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: cd server
+      run: cd server
     - name: Build
       run: cargo build --verbose
     - name: Run tests
