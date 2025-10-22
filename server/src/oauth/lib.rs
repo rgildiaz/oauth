@@ -17,6 +17,7 @@ pub struct AuthGrant {
 pub enum AuthError {
     DatabaseError,
     ExpirationCalculationFailed,
+    NoAuthGrantFound,
 }
 
 /// Generate an `AuthGrant` that expires in 15 minutes.
@@ -41,7 +42,7 @@ pub fn generate_auth_grant(
     // save the grant to the db
     match get_auth_db() {
         Ok(mut db) => {
-            db.insert(&grant);
+            db.insert(grant.code.clone(), grant.clone());
         }
         Err(e) => {
             eprintln!("Error while getting database: {e}");
@@ -59,17 +60,18 @@ pub struct AccessToken {
 
 /// Exchange an auth grant code for an access token
 pub fn exchange_auth_grant(code: String) -> Result<AccessToken, AuthError> {
-    // TODO: prob a good idea to store the db on a struct
-    match get_auth_db() {
-        Ok(mut db) => {
-            let _ = db.remove(code);
-            Ok(AccessToken {
-                token: "access_token".into(),
-            })
-        }
+    let mut db = match get_auth_db() {
+        Ok(db) => db,
         Err(e) => {
             eprintln!("Error while getting database: {e}");
-            Err(AuthError::DatabaseError)
+            return Err(AuthError::DatabaseError);
         }
+    };
+
+    match db.remove(code) {
+        Some(_grant) => Ok(AccessToken {
+            token: "token".into(),
+        }),
+        _ => Err(AuthError::NoAuthGrantFound),
     }
 }

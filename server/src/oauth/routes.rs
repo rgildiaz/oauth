@@ -1,6 +1,6 @@
 use crate::{
     error::UserError,
-    oauth::lib::{exchange_auth_grant, generate_auth_grant, AccessToken, AuthGrant},
+    oauth::lib::{exchange_auth_grant, generate_auth_grant, AccessToken,AuthGrant},
 };
 use rocket::{serde::json::Json, Route};
 use serde::{Deserialize, Serialize};
@@ -45,13 +45,12 @@ struct AuthGrantRequest {
 /// - no such grant can be found
 #[post("/token", data = "<data>")]
 fn token(data: Json<AuthGrantRequest>) -> Result<Json<AccessToken>, UserError> {
-    if let Ok(token) = exchange_auth_grant(data.code.clone()) {
-        Ok(Json(token))
-    } else {
-        Err(UserError {
-            error: "Failed to exchange auth grant".into(),
-            code: 400,
-        })
+    match exchange_auth_grant(data.code.clone()) {
+        Ok(token) => Ok(Json(token)),
+        Err(e) => {
+            let error = format!("Failed to exchange auth grant. {e:?}").into();
+            Err(UserError { error, code: 400 })
+        }
     }
 }
 
