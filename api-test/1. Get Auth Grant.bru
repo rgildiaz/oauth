@@ -1,0 +1,20 @@
+meta {
+  name: 1. Get Auth Grant
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:8000/login/oauth/authorize?client_id=c&redirect_uri=r
+  body: none
+  auth: inherit
+}
+
+params:query {
+  client_id: c
+  redirect_uri: r
+}
+
+settings {
+  encodeUrl: true
+}
