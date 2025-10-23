@@ -76,7 +76,7 @@ pub fn exchange_auth_grant(code: String) -> Result<AccessToken, AuthError> {
         .remove(code)
         .ok_or(AuthError::NoAuthGrantFound)?;
 
-    let token = generate_token().unwrap();
+    let token = generate_token().map_err(|_| AuthError::InternalError)?;
     let hash = hash(token.token.clone())?;
     token_db.insert(
         hash,
