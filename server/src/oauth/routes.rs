@@ -53,7 +53,7 @@ fn token(data: Json<AuthGrantRequest>) -> Result<Json<AccessToken>, UserError> {
     match exchange_auth_grant(data.code.clone()) {
         Ok(token) => Ok(Json(token)),
         Err(e) => {
-            let error = format!("Failed to exchange auth grant. {e:?}").into();
+            let error = format!("Failed to exchange auth grant. {e:?}");
             Err(UserError { error, code: 400 })
         }
     }
@@ -85,11 +85,11 @@ fn validate(token: TokenHeader) -> Result<String, UserError> {
     match check_token(token.0.clone()) {
         Ok(_) => {}
         Err(e) => {
-            let error = format!("Failed to validate token. {e:?}").into();
+            let error = format!("Failed to validate token. {e:?}");
             return Err(UserError { error, code: 400 });
         }
     };
-    Ok(format!("got {token:?}").into())
+    Ok(format!("got {token:?}"))
 }
 
 pub fn routes() -> Vec<Route> {

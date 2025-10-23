@@ -81,7 +81,7 @@ pub fn exchange_auth_grant(code: String) -> Result<AccessToken, AuthError> {
     token_db.insert(
         hash,
         TokenHash {
-            expires_at: token.expires_at.clone(),
+            expires_at: token.expires_at,
         },
     );
     Ok(token)

@@ -1,14 +1,12 @@
-use once_cell::sync::Lazy;
+// use once_cell::sync::Lazy;
 use std::hash::{DefaultHasher, Hash, Hasher};
-use std::sync::{Mutex, MutexGuard, PoisonError};
+// use std::sync::{Mutex, MutexGuard, PoisonError};
 
-static HASHER: Lazy<Mutex<DefaultHasher>> = Lazy::new(|| Mutex::new(DefaultHasher::new()));
+// static HASHER: Lazy<Mutex<DefaultHasher>> = Lazy::new(|| Mutex::new(DefaultHasher::new()));
 
-pub enum HashErr {
-    HashErr,
-}
+pub enum HashErr {}
 
-/// TODO: looks like i can't get a &mut to a MutexGuard, so this doesn't work
+// /// TODO: looks like i can't get a &mut to a MutexGuard, so this doesn't work
 // fn get_hasher(
 // ) -> Result<MutexGuard<'static, DefaultHasher>, PoisonError<MutexGuard<'static, DefaultHasher>>> {
 //     HASHER.lock()
