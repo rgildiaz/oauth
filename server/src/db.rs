@@ -9,14 +9,29 @@ use std::fmt::Debug;
 use std::sync::{Mutex, MutexGuard, PoisonError};
 
 /// A singleton instance of the DB
-static DB_INSTANCE: Lazy<Mutex<DummyDB<AuthGrant>>> = Lazy::new(|| Mutex::new(DummyDB::new()));
+static GRANT_DB: Lazy<Mutex<DummyDB<AuthGrant>>> = Lazy::new(|| Mutex::new(DummyDB::new()));
 
-/// Get the active DB instance
-pub fn get_auth_db() -> Result<
+static TOKEN_DB: Lazy<Mutex<DummyDB<TokenHash>>> = Lazy::new(|| Mutex::new(DummyDB::new()));
+
+/// Get the active auth grant DB instance
+pub fn get_auth_grant_db() -> Result<
     MutexGuard<'static, DummyDB<AuthGrant>>,
     PoisonError<MutexGuard<'static, DummyDB<AuthGrant>>>,
 > {
-    DB_INSTANCE.lock()
+    GRANT_DB.lock()
+}
+
+#[derive(Debug)]
+pub struct TokenHash {
+    pub expires_at: i64,
+}
+
+/// Get the active token db
+pub fn get_token_db() -> Result<
+    MutexGuard<'static, DummyDB<TokenHash>>,
+    PoisonError<MutexGuard<'static, DummyDB<TokenHash>>>,
+> {
+    TOKEN_DB.lock()
 }
 
 /// A simple in-memory database for demonstration purposes

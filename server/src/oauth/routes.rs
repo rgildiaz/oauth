@@ -1,8 +1,13 @@
 use crate::{
     error::UserError,
-    oauth::lib::{exchange_auth_grant, generate_auth_grant, AccessToken,AuthGrant},
+    oauth::lib::{check_token, exchange_auth_grant, generate_auth_grant, AccessToken, AuthGrant},
 };
-use rocket::{serde::json::Json, Route};
+use rocket::http::Status;
+use rocket::{
+    request::{FromRequest, Outcome, Request},
+    serde::json::Json,
+    Route,
+};
 use serde::{Deserialize, Serialize};
 
 /// Start the OAuth 2.0 flow by requesting an authorization grant token that can be exchanged for an access token.
@@ -54,6 +59,39 @@ fn token(data: Json<AuthGrantRequest>) -> Result<Json<AccessToken>, UserError> {
     }
 }
 
+#[derive(Debug)]
+struct TokenHeader(String);
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for TokenHeader {
+    type Error = String;
+
+    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        let token = req.headers().get_one("authorization");
+        match token {
+            Some(token) => {
+                // check validity
+                Outcome::Success(TokenHeader(token.to_string()))
+            }
+            // token does not exist
+            None => Outcome::Error((Status::Unauthorized, "missing authorization header".into())),
+        }
+    }
+}
+
+/// Validate a token that was sent in the request headers
+#[post("/validate")]
+fn validate(token: TokenHeader) -> Result<String, UserError> {
+    match check_token(token.0.clone()) {
+        Ok(_) => {}
+        Err(e) => {
+            let error = format!("Failed to validate token. {e:?}").into();
+            return Err(UserError { error, code: 400 });
+        }
+    };
+    Ok(format!("got {token:?}").into())
+}
+
 pub fn routes() -> Vec<Route> {
-    routes![auth, token]
+    routes![auth, token, validate]
 }
