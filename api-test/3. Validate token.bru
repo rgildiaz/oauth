@@ -1,0 +1,19 @@
+meta {
+  name: 3. Validate token
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8000/login/oauth/validate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: token
+}
+
+settings {
+  encodeUrl: true
+}
